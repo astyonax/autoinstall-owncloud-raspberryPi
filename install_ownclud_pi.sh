@@ -12,11 +12,14 @@ sudo apt-get install nginx openssl ssl-cert php5-cli php5-sqlite php5-gd php5-co
 sudo apt-get install jpegoptim optipng
 sudo apt-get --purge remove php5-curl
 # 2 years valid certificate 
-# https://t37.net/a-poodle-proof-bulletproof-nginx-ssl-configuration.html
-sudo openssl req $@ -new -x509 -days 730 -nodes -out /etc/nginx/cert.pem -keyout /etc/nginx/cert.key
+# + https://t37.net/a-poodle-proof-bulletproof-nginx-ssl-configuration.html say to use sha256 and modify the nginx.confg
+# HUMAN work: check your server config with ssllabs.com/testssl
+
+sudo openssl req $@ -new -x509 -days 730 -nodes -sha256 -out /etc/nginx/cert.pem -keyout /etc/nginx/cert.key
 sudo chmod 600 /etc/nginx/cert.pem
 sudo chmod 600 /etc/nginx/cert.key
-sed s/'technet.example.com'/'wolfeat.duckdns.org'/ nginx.conf > tmp
+
+sed s/'SERVER'/'wolfeat.duckdns.org'/ nginx.conf > tmp
 sudo mv  tmp /etc/nginx/sites-available/default -v
 
 #configure here the php files.. 
@@ -33,7 +36,7 @@ sudo mv /etc/dphys-swapfie /etc/dphys-swapfie~ -v
 sudo mv tmp_swapfile /etc/dphys-swapfile -v
 
 #you need to cofigure apc and NGINX too to serve static files as static
-# configured the sites-available
+# configured the sites-available and use only secure TSL* protocols and secure cyphers (+ RC4 for compatibility)
 #and /etc/nginx/nginx.conf
 
 sudo /etc/init.d/php5-fpm restart
